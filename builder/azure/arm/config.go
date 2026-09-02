@@ -921,10 +921,11 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 		return nil, err
 	}
 
-	// NOTE: if the user did not specify a communicator, then default to both
-	// SSH and WinRM.  This is for backwards compatibility because the code did
-	// not specifically force the user to set a communicator.
-	if c.Comm.Type == "" || strings.EqualFold(c.Comm.Type, "ssh") {
+	// A Linux VM always needs a valid SSH public key in its ARM template,
+	// independent of the communicator; key off the OS so communicator="none"
+	// still gets one (otherwise keyData is empty and Azure rejects the deploy).
+	// OSType is not normalized until assertRequiredParametersSet, so use EqualFold.
+	if strings.EqualFold(c.OSType, constants.Target_Linux) {
 		err = setSshValues(c)
 		if err != nil {
 			return nil, err
