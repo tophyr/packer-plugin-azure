@@ -925,7 +925,7 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 	// independent of the communicator; key off the OS so communicator="none"
 	// still gets one (otherwise keyData is empty and Azure rejects the deploy).
 	// OSType is not normalized until assertRequiredParametersSet, so use EqualFold.
-	if strings.EqualFold(c.OSType, constants.Target_Linux) {
+if strings.EqualFold(c.OSType, constants.Target_Linux) || strings.EqualFold(c.Comm.Type, "ssh") {
 		err = setSshValues(c)
 		if err != nil {
 			return nil, err
